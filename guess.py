@@ -21,6 +21,7 @@ while True:
     else:
         selected_level = int(selected_level)
         print(f"You chose level {selected_level}")
+        print("------------------------------------------------------------------------------")
         break
 
 if selected_level == 1:
@@ -32,19 +33,45 @@ else:
 
 # ---------- Choose a mode ----------
 # Goal: keep asking until the player picks Classic or Time Challenge.
+while True:
+    print("Please pick a mode:\n")
+    print("1 - CLASSIC - You have a limited number of attempts to guess the secret number.")
+    print("2 - TIME CHALLENGE - You have a limited amount of time to guess the secret number.\n")
+    selected_mode = input("Please enter the digit 1 or 2 to choose the mode:\n")
+
+    if not selected_mode.isdigit() or int(selected_mode) < 1 or int(selected_mode) > 2:
+        print("Invalid input!")
+    else:
+        selected_mode = int(selected_mode)
+        print(f"You chose mode {selected_mode}")
+        print("------------------------------------------------------------------------------")
+        break
 
 # ---------- Set up the round ----------
 # Goal: pick the secret number (use DEBUG_SECRET when it is not None) and start the clock.
-# ---------- Set up the round ----------
 if DEBUG_SECRET is not None:
     secret_number = DEBUG_SECRET
 else:
     secret_number = random.randint(low, high)
 
+if selected_mode == 2:
+    start_time = time.time()
+
 # ---------- Guess loop ----------
 # Goal: keep asking for guesses until the player wins, runs out of attempts, or runs out of time.
 attempts = 0
+time_out = False
+
 while attempts < max_attempts:
+    if selected_mode == 2:
+        elapsed_time = time.time() - start_time
+        remaining_time = TIME_LIMIT - elapsed_time
+        if remaining_time <= 0:
+            time_out = True
+            break
+        else:
+            print(f"You have {remaining_time:.0f} seconds remaining.")
+    
     while True:
         # Get user input
         user_guess = input(f"Please enter a number between {low}-{high}:\n")
@@ -59,6 +86,13 @@ while attempts < max_attempts:
     # Increment the attempt count
     attempts += 1
 
+    # Check timeout immediately AFTER a valid guess
+    if selected_mode == 2:
+        elapsed_time = time.time() - start_time
+        if elapsed_time > TIME_LIMIT:
+            time_out = True
+            break
+
     # Compare the guessed number with the secret number
     if user_guess == secret_number:
         print(f"{user_guess} is the correct number! You guessed it in {attempts} attempts. Well done!")
@@ -68,8 +102,10 @@ while attempts < max_attempts:
     else:
         print(f"The entered number is TOO HIGH! You have {max_attempts - attempts} attempts remaining.")
 
-if user_guess != secret_number:
-    print(f"You've used all your attempts. The correct number was {secret_number}. Better luck next time!")
-
 # ---------- End of round ----------
 # Goal: show the result that matches how the round ended.
+if time_out:
+    print(f"You've run out of time! The correct number was {secret_number}. Better luck next time!")
+elif user_guess != secret_number:
+    print(f"You've used all your attempts. The correct number was {secret_number}. Better luck next time!")
+

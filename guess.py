@@ -4,8 +4,6 @@ import time
 # ---------- Settings ----------
 DEBUG_SECRET = None   # For testing, set to a number such as 42. Set back to None before your final commit.
 TIME_LIMIT = 60       # Seconds allowed in Time Challenge mode
-LOW = 1               # Hardcoded lower limit
-HIGH = 50             # Hardcoded upper limit
 
 print("Welcome to the Number Guessing Game")
 
@@ -25,6 +23,13 @@ while True:
         print(f"You chose level {selected_level}")
         break
 
+if selected_level == 1:
+    low, high, max_attempts = 1, 50, 10
+elif selected_level == 2:
+    low, high, max_attempts = 1, 100, 8
+else:
+    low, high, max_attempts = 1, 500, 10
+
 # ---------- Choose a mode ----------
 # Goal: keep asking until the player picks Classic or Time Challenge.
 
@@ -34,18 +39,18 @@ while True:
 if DEBUG_SECRET is not None:
     secret_number = DEBUG_SECRET
 else:
-    secret_number = random.randint(LOW, HIGH)
+    secret_number = random.randint(low, high)
 
 # ---------- Guess loop ----------
 # Goal: keep asking for guesses until the player wins, runs out of attempts, or runs out of time.
 attempts = 0
-while True:
+while attempts < max_attempts:
     while True:
         # Get user input
-        user_guess = input(f"Please enter a number between {LOW}-{HIGH}:\n")
+        user_guess = input(f"Please enter a number between {low}-{high}:\n")
 
         # Input validation
-        if not user_guess.isdigit() or int(user_guess) < LOW or int(user_guess) > HIGH:
+        if not user_guess.isdigit() or int(user_guess) < low or int(user_guess) > high:
             print("Invalid input")
         else:
             user_guess = int(user_guess)
@@ -59,11 +64,12 @@ while True:
         print(f"{user_guess} is the correct number! You guessed it in {attempts} attempts. Well done!")
         break
     elif user_guess < secret_number:
-        print(f"The entered number is TOO LOW!")
+        print(f"The entered number is TOO LOW! You have {max_attempts - attempts} attempts remaining.")
     else:
-        print(f"The entered number is TOO HIGH!")
+        print(f"The entered number is TOO HIGH! You have {max_attempts - attempts} attempts remaining.")
 
-
+if user_guess != secret_number:
+    print(f"You've used all your attempts. The correct number was {secret_number}. Better luck next time!")
 
 # ---------- End of round ----------
 # Goal: show the result that matches how the round ended.

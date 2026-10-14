@@ -17,7 +17,11 @@ print("Welcome to the Number Guessing Game")
 
 # ---------- Set up the round ----------
 # Goal: pick the secret number (use DEBUG_SECRET when it is not None) and start the clock.
-secret_number = random.randint(1, 50)
+# ---------- Set up the round ----------
+if DEBUG_SECRET is not None:
+    secret_number = DEBUG_SECRET
+else:
+    secret_number = random.randint(LOW, HIGH)
 
 # ---------- Guess loop ----------
 # Goal: keep asking for guesses until the player wins, runs out of attempts, or runs out of time.
